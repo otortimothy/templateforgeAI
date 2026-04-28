@@ -3,11 +3,6 @@ import OpenAI from 'openai';
 import type { ChatCompletionContentPart, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { createClient } from '@/lib/supabase/server';
 
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
-
 const MODIFY_COST = 2;
 
 export async function POST(req: NextRequest) {
@@ -39,6 +34,12 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       );
     }
+
+    // Instantiate client here so it only runs at request time
+    const openai = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: process.env.OPENROUTER_API_KEY,
+    });
 
     // ── Auth + Credit check ─────────────────────────────────────────────
     const supabase = await createClient();
