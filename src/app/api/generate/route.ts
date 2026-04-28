@@ -4,12 +4,6 @@ import { createClient } from '@/lib/supabase/server';
 import { buildPrompt, buildTitle, SYSTEM_PROMPT } from '@/lib/ai/prompts';
 import { TemplateType, TEMPLATE_TYPES } from '@/lib/templates';
 
-// Initialize client - will throw clearly if key is missing
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
-
 export async function POST(req: NextRequest) {
   try {
     // ── Parse request ─────────────────────────────────────────────────────
@@ -42,6 +36,12 @@ export async function POST(req: NextRequest) {
         { status: 503 }
       );
     }
+
+    // Instantiate client here so it only runs at request time
+    const openai = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: process.env.OPENROUTER_API_KEY,
+    });
 
     // ── Auth + Credit check (optional — works for guests too) ─────────────
     const supabase = await createClient();
