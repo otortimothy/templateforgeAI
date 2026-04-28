@@ -56,7 +56,8 @@ export type TemplateType =
   | 'content-calendar'
   | 'social-media-kit'
   | 'press-release'
-  | 'meeting-agenda';
+  | 'meeting-agenda'
+  | 'ai-modification';
 
 export const TEMPLATE_TYPES: Record<TemplateCategory, {
   id: TemplateType;
@@ -245,6 +246,13 @@ export const TEMPLATE_FORMS: Record<TemplateType, {
       { id: 'attendees', label: 'Attendees', type: 'textarea', placeholder: 'List names/roles (one per line)...', required: true },
       { id: 'objective', label: 'Meeting Objective', type: 'textarea', placeholder: 'What should be accomplished by the end?', required: true },
       { id: 'agendaItems', label: 'Agenda Items', type: 'textarea', placeholder: 'Item | Duration | Owner (one per line)\ne.g., Q2 Review | 15 min | Sarah', required: true },
+    ],
+  },
+  'ai-modification': {
+    title: 'AI Modification',
+    description: 'Modify an existing template using AI.',
+    fields: [
+      { id: 'instructions', label: 'Modification Instructions', type: 'textarea', placeholder: 'Describe what to change...', required: true },
     ],
   },
 };

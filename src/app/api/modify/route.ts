@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import type { ChatCompletionContentPart, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { createClient } from '@/lib/supabase/server';
 
 const openai = new OpenAI({
@@ -74,11 +75,7 @@ RULES:
 - Make the result visually impressive and professional.`;
 
     // Build the messages array — supports both text and image vision
-    type MessageContent =
-      | { type: 'text'; text: string }
-      | { type: 'image_url'; image_url: { url: string } };
-
-    const userContent: MessageContent[] = [];
+    const userContent: ChatCompletionContentPart[] = [];
 
     if (imageBase64) {
       userContent.push({
@@ -96,11 +93,13 @@ RULES:
       });
     }
 
+    const userMessage: ChatCompletionMessageParam = { role: 'user', content: userContent };
+
     const completion = await openai.chat.completions.create({
       model: 'google/gemma-3-27b-it:free',
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent as Parameters<typeof openai.chat.completions.create>[0]['messages'][0]['content'] },
+        userMessage,
       ],
       temperature: 0.7,
       max_tokens: 4000,

@@ -9,6 +9,8 @@ import { useAuth } from '@/lib/auth-context';
 import { useDashboard } from '@/lib/dashboard-context';
 import TemplateOutput from '@/components/templates/TemplateOutput';
 import Link from 'next/link';
+import type { TemplateType } from '@/lib/templates';
+import type { GeneratedTemplate } from '@/lib/generate';
 
 const MODIFY_COST = 2;
 
@@ -41,9 +43,7 @@ export default function ModifyPage() {
   const [instructions, setInstructions] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [result, setResult] = useState<{
-    id: string; type: string; title: string; html: string; createdAt: string; formData?: Record<string, string>;
-  } | null>(null);
+  const [result, setResult] = useState<GeneratedTemplate | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -147,7 +147,11 @@ export default function ModifyPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Modification failed.');
 
-      const generated = { ...data, formData: { instructions } };
+      const generated: GeneratedTemplate = {
+        ...data,
+        type: data.type as TemplateType,
+        formData: { instructions },
+      };
       setResult(generated);
       addGenerated(generated);
       if (user) updateCredits(-MODIFY_COST);

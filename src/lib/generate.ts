@@ -663,6 +663,7 @@ async function mockGenerate(
     'social-media-kit': generateSocialMediaKit,
     'press-release': generatePressRelease,
     'meeting-agenda': generateMeetingAgenda,
+    'ai-modification': generateResume, // fallback — AI Modification uses the /api/modify route directly
   };
 
   const generator = generators[type] || generators.resume;
@@ -679,6 +680,7 @@ async function mockGenerate(
     'social-media-kit': `${formData.brand || 'Brand'} — Social Media Kit`,
     'press-release': `Press Release — ${formData.company || 'Company'}`,
     'meeting-agenda': `${formData.meetingTitle || 'Meeting Agenda'}`,
+    'ai-modification': `AI Modified — ${new Date().toLocaleDateString()}`,
   };
 
   return {
