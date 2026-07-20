@@ -607,14 +607,15 @@ function generateSocialMediaKit(data: Record<string, string>): string {
 
 export async function generateTemplate(
   type: TemplateType,
-  formData: Record<string, string>
+  formData: Record<string, string>,
+  model?: string
 ): Promise<GeneratedTemplate> {
   // ── Try real AI first ────────────────────────────────────────────────────
   try {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type, formData }),
+      body: JSON.stringify({ type, formData, model }),
     });
 
     if (res.ok) {

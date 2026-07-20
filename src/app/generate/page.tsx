@@ -37,6 +37,7 @@ function GeneratePageInner() {
   const [multiSelects, setMultiSelects] = useState<Record<string, string[]>>({});
   const [generated, setGenerated] = useState<GeneratedTemplate | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedModel, setSelectedModel] = useState<string>('google/gemma-4-26b-a4b-it:free');
 
   const { addGenerated } = useDashboard();
   const { user, updateCredits } = useAuth();
@@ -118,7 +119,7 @@ function GeneratePageInner() {
 
     setStep('loading');
     try {
-      const result = await generateTemplate(templateType, formData);
+      const result = await generateTemplate(templateType, formData, selectedModel);
       addGenerated(result);
       if (user) updateCredits(-cost);
       setGenerated(result);
@@ -232,6 +233,55 @@ function GeneratePageInner() {
           <div className="glass rounded-2xl border border-white/[0.06] p-6 sm:p-8">
             <h2 className="text-2xl font-bold text-white mb-1">{TEMPLATE_FORMS[templateType].title}</h2>
             <p className="text-slate-400 text-sm mb-6">{TEMPLATE_FORMS[templateType].description}</p>
+
+            {/* AI Model Selection / Resource Choice */}
+            <div className="mb-6 p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/10">
+              <label className="block text-sm font-semibold text-slate-300 mb-2">
+                Select AI Engine & Resource
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedModel('google/gemma-4-26b-a4b-it:free')}
+                  className={clsx(
+                    'p-3 rounded-xl border text-left transition-all hover:scale-[1.01] flex flex-col justify-between',
+                    selectedModel === 'google/gemma-4-26b-a4b-it:free'
+                      ? 'bg-indigo-600/20 border-indigo-500/80 shadow-lg shadow-indigo-500/5'
+                      : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                  )}
+                >
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm font-bold text-white">Gemma 4 Eco-MoE</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">Eco-Friendly</span>
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">
+                      Uses MoE architecture. Activates only 3.8B parameters per token for lower compute resources and fast output.
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedModel('google/gemma-4-31b-it:free')}
+                  className={clsx(
+                    'p-3 rounded-xl border text-left transition-all hover:scale-[1.01] flex flex-col justify-between',
+                    selectedModel === 'google/gemma-4-31b-it:free'
+                      ? 'bg-indigo-600/20 border-indigo-500/80 shadow-lg shadow-indigo-500/5'
+                      : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                  )}
+                >
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm font-bold text-white">Gemma 4 Dense</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-400 font-medium">Deep Quality</span>
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">
+                      Uses dense 30.7B parameters. Best for complex layouts and highly detailed descriptions, requiring more compute resource.
+                    </p>
+                  </div>
+                </button>
+              </div>
+            </div>
 
             <div className="space-y-5">
               {TEMPLATE_FORMS[templateType].fields.map(field => (

@@ -8,11 +8,12 @@ const MODIFY_COST = 2;
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { templateContent, instructions, imageBase64, imageType } = body as {
+    const { templateContent, instructions, imageBase64, imageType, model } = body as {
       templateContent?: string;
       instructions: string;
       imageBase64?: string;   // full data URL: "data:image/png;base64,..."
       imageType?: string;
+      model?: string;
     };
 
     if (!instructions) {
@@ -96,8 +97,12 @@ RULES:
 
     const userMessage: ChatCompletionMessageParam = { role: 'user', content: userContent };
 
+    const selectedModel = (!model || model === 'google/gemma-3-27b-it:free')
+      ? 'google/gemma-4-31b-it:free'
+      : model;
+
     const completion = await openai.chat.completions.create({
-      model: 'google/gemma-3-27b-it:free',
+      model: selectedModel,
       messages: [
         { role: 'system', content: systemPrompt },
         userMessage,

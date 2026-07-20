@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useDashboard } from '@/lib/dashboard-context';
 import TemplateOutput from '@/components/templates/TemplateOutput';
 import Link from 'next/link';
+import clsx from 'clsx';
 import type { TemplateType } from '@/lib/templates';
 import type { GeneratedTemplate } from '@/lib/generate';
 
@@ -44,6 +45,7 @@ export default function ModifyPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<GeneratedTemplate | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string>('google/gemma-4-26b-a4b-it:free');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -125,7 +127,7 @@ export default function ModifyPage() {
 
     setLoading(true);
     try {
-      const body: Record<string, string> = { instructions };
+      const body: Record<string, string> = { instructions, model: selectedModel };
 
       if (inputMode === 'paste') {
         body.templateContent = templateContent;
@@ -325,6 +327,55 @@ export default function ModifyPage() {
                   )}
                 </>
               )}
+            </div>
+
+            {/* AI Model Selection / Resource Choice */}
+            <div className="glass border border-white/[0.06] rounded-2xl p-6">
+              <label className="block text-sm font-semibold text-slate-300 mb-3">
+                Select AI Engine & Resource
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedModel('google/gemma-4-26b-a4b-it:free')}
+                  className={clsx(
+                    'p-3 rounded-xl border text-left transition-all hover:scale-[1.01] flex flex-col justify-between',
+                    selectedModel === 'google/gemma-4-26b-a4b-it:free'
+                      ? 'bg-violet-600/20 border-violet-500/80 shadow-lg shadow-violet-500/5'
+                      : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                  )}
+                >
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm font-bold text-white">Gemma 4 Eco-MoE</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">Eco-Friendly</span>
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">
+                      Uses MoE architecture. Activates only 3.8B parameters per token for lower compute resources and fast output.
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedModel('google/gemma-4-31b-it:free')}
+                  className={clsx(
+                    'p-3 rounded-xl border text-left transition-all hover:scale-[1.01] flex flex-col justify-between',
+                    selectedModel === 'google/gemma-4-31b-it:free'
+                      ? 'bg-violet-600/20 border-violet-500/80 shadow-lg shadow-violet-500/5'
+                      : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                  )}
+                >
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-sm font-bold text-white">Gemma 4 Dense</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-400 font-medium">Deep Quality</span>
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">
+                      Uses dense 30.7B parameters. Best for complex layouts and highly detailed descriptions, requiring more compute resource.
+                    </p>
+                  </div>
+                </button>
+              </div>
             </div>
 
             {/* Modification instructions */}

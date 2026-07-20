@@ -8,9 +8,10 @@ export async function POST(req: NextRequest) {
   try {
     // ── Parse request ─────────────────────────────────────────────────────
     const body = await req.json();
-    const { type, formData } = body as {
+    const { type, formData, model } = body as {
       type: TemplateType;
       formData: Record<string, string>;
+      model?: string;
     };
 
     if (!type || !formData) {
@@ -70,8 +71,13 @@ export async function POST(req: NextRequest) {
     // ── Call OpenAI ───────────────────────────────────────────────────────
     const userPrompt = buildPrompt(type, formData);
 
+    // Map legacy/unavailable models to the latest Gemma 4 model
+    const selectedModel = (!model || model === 'google/gemma-3-27b-it:free')
+      ? 'google/gemma-4-31b-it:free'
+      : model;
+
     const completion = await openai.chat.completions.create({
-      model: 'google/gemma-3-27b-it:free',
+      model: selectedModel,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPrompt },
