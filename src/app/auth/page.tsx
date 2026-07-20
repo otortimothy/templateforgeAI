@@ -109,13 +109,13 @@ function AuthPageInner() {
             ))}
           </ul>
 
-          <div className="mt-12 pt-8 border-t border-white/10">
+          {/* <div className="mt-12 pt-8 border-t border-white/10">
             <p className="text-sm text-slate-500 mb-3">Demo credentials to explore</p>
             <div className="space-y-2 text-sm">
               <p className="text-slate-400">Email: <span className="text-indigo-300 font-mono">demo@templateforge.ai</span></p>
               <p className="text-slate-400">Password: <span className="text-indigo-300 font-mono">demo1234</span></p>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
